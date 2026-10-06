@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Resume Screening & Recruiter Intelligence Portal</title>
+    <meta name="description" content="AI-powered ATS Resume Screening and Recruiter Decision Dashboard with Nemotron AI model recommendations." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <!-- Universal Header -->
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="brand-logo-wrap">
+            <span class="logo-spark">✨</span>
+          </div>
+          <div>
+            <div class="eyebrow-row">
+              <span class="eyebrow">Enterprise ATS Intelligence</span>
+              <span class="ai-status-indicator"><span class="pulse-dot"></span> Nemotron-3 Active</span>
+            </div>
+            <h1>TalentPulse AI</h1>
+          </div>
+        </div>
+
+        <div class="topbar-controls">
+          <!-- Navigation Tabs -->
+          <nav class="nav-tabs" id="navTabs">
+            <button id="navScreenTab" class="tab-btn active" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>Screen Resume</span>
+            </button>
+            <button id="navDashboardTab" class="tab-btn" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+              <span>Recruiter Dashboard</span>
+              <span class="nav-badge" id="recBadge">0</span>
+            </button>
+          </nav>
+
+          <!-- Auth Status Header Profile / Login Button -->
+          <div class="auth-bar" id="authBar">
+            <div id="loggedOutSection" class="auth-section">
+              <button id="openLoginBtn" class="glass-pill-btn" type="button">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                <span>Recruiter Portal Login</span>
+              </button>
+            </div>
+
+            <div id="loggedInSection" class="auth-section hidden">
+              <div class="user-chip">
+                <div class="avatar" id="userAvatar">SJ</div>
+                <div class="user-meta">
+                  <span class="user-name" id="userNameDisplay">Sarah Jenkins</span>
+                  <span class="user-role" id="userRoleDisplay">Lead Talent Partner</span>
+                </div>
+              </div>
+              <button id="logoutBtn" class="logout-btn" title="Sign out" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- VIEW 1: CANDIDATE SCREENING VIEW -->
+      <section id="screenView" class="view-section active">
+        <main class="layout">
+          <!-- Screening Input Panel -->
+          <section class="panel form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Screen & Evaluate Candidate</h2>
+                <p class="panel-subtitle">Upload resume document (PDF, DOCX, TXT) and target job description for instant AI recommendation.</p>
+              </div>
+              <button id="quickFillBtn" type="button" class="text-link-btn">⚡ Fill Sample Job</button>
+            </div>
+
+            <form id="resumeForm" enctype="multipart/form-data">
+              <div class="field-group">
+                <label for="role">Job Title <span class="required">*</span></label>
+                <div class="input-icon-wrap">
+                  <input id="role" name="role" type="text" placeholder="e.g. Senior Fullstack Engineer" required />
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="jobDescription">Target Job Description & Key Criteria <span class="required">*</span></label>
+                <textarea id="jobDescription" name="jobDescription" rows="6" placeholder="Paste requirements, tech stack, responsibilities, and qualifications..." required></textarea>
+              </div>
+
+              <div class="field-group">
+                <label for="resume">Upload Candidate Resume <span class="required">*</span></label>
+                <div class="drop-zone" id="dropZone">
+                  <input id="resume" name="resume" type="file" accept=".pdf,.doc,.docx,.txt" required />
+                  <div class="drop-zone-content">
+                    <svg class="upload-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <p class="drop-prompt"><strong>Click to upload</strong> or drag & drop resume</p>
+                    <span class="file-limits">PDF, DOCX, DOC, TXT (Max 10MB)</span>
+                    <span id="fileSelectedName" class="file-selected-name hidden"></span>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" id="submitBtn" class="primary-btn">
+                <span class="btn-text">Analyze Candidate with AI</span>
+                <span class="btn-spinner hidden"></span>
+              </button>
+            </form>
+
+            <!-- Real-Time Evaluation Result Card -->
+            <div id="resultCard" class="result-card hidden">
+              <div class="result-header">
+                <div>
+                  <span class="eyebrow" id="resultCandidateName">Candidate Evaluation</span>
+                  <div class="score-display-row">
+                    <h3 id="scoreValue" class="score-big">0%</h3>
+                    <div class="recommendation-badge-wrap">
+                      <span id="recommendationBadge" class="rec-badge">Under Review</span>
+                      <span id="modeBadge" class="mode-badge">Nemotron-3</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recruiter Verdict Box -->
+              <div class="recruiter-verdict-box" id="recruiterVerdictBox">
+                <div class="verdict-header">
+                  <span class="verdict-icon">💡</span>
+                  <strong>Recruiter Recommendation & Action Strategy</strong>
+                </div>
+                <p id="recommendationDetailsText" class="verdict-text"></p>
+              </div>
+
+              <!-- Profile Quick Metrics -->
+              <div class="quick-meta-grid">
+                <div class="meta-card">
+                  <span class="meta-label">Est. Experience</span>
+                  <span class="meta-val" id="resultExp">--</span>
+                </div>
+                <div class="meta-card">
+                  <span class="meta-label">Education</span>
+                  <span class="meta-val" id="resultEdu">--</span>
+                </div>
+                <div class="meta-card">
+                  <span class="meta-label">Pipeline Status</span>
+                  <span class="meta-val status-text" id="resultStatus">Shortlisted</span>
+                </div>
+              </div>
+
+              <p id="summaryText" class="summary"></p>
+
+              <!-- Skills & Gaps Breakdown -->
+              <div class="chips-wrap">
+                <div class="chip-group">
+                  <h4><span class="dot-success"></span> Matched Core Skills</h4>
+                  <div id="matchedSkills" class="chip-list"></div>
+                </div>
+                <div class="chip-group">
+                  <h4><span class="dot-warning"></span> Skill Gaps / Missing Requirements</h4>
+                  <div id="missingSkills" class="chip-list"></div>
+                </div>
+              </div>
+
+              <!-- Action to view in dashboard -->
+              <div class="result-footer-actions">
+                <button id="viewInDashboardBtn" type="button" class="secondary-btn">
+                  Open in Recruiter Dashboard & Pipeline ➔
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- History & Live Feed Sidebar -->
+          <aside class="panel history-panel">
+            <div class="panel-header">
+              <h2>Recent Candidates</h2>
+              <button id="refreshHistoryBtn" class="icon-refresh-btn" title="Refresh feed">↻</button>
+            </div>
+            <p class="panel-subtitle">Latest parsed talent submissions across active requisitions.</p>
+            <div id="historyList" class="history-list"></div>
+          </aside>
+        </main>
+      </section>
+
+      <!-- VIEW 2: RECRUITER DASHBOARD VIEW -->
+      <section id="dashboardView" class="view-section hidden">
+        <!-- Dashboard Top Metrics Ribbon -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon metric-blue">👥</div>
+            <div>
+              <span class="metric-label">Total Screened</span>
+              <h3 class="metric-value" id="statTotalScreened">0</h3>
+            </div>
+          </div>
+          <div class="metric-card highlight-metric">
+            <div class="metric-icon metric-green">⭐</div>
+            <div>
+              <span class="metric-label">Recommended for Hire</span>
+              <h3 class="metric-value" id="statRecommended">0</h3>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon metric-purple">🎯</div>
+            <div>
+              <span class="metric-label">High-Fit (>80%)</span>
+              <h3 class="metric-value" id="statTopTier">0</h3>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon metric-cyan">📊</div>
+            <div>
+              <span class="metric-label">Avg Candidate Fit</span>
+              <h3 class="metric-value" id="statAvgScore">0%</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Main Panel -->
+        <div class="dashboard-panel panel">
+          <div class="dashboard-toolbar">
+            <div class="dashboard-title-area">
+              <h2>Candidate Pipeline & Recruiter Recommendations</h2>
+              <p class="panel-subtitle">Review AI hiring assessments, filter by recruiter recommendation, and update interview stages.</p>
+            </div>
+
+            <div class="filter-controls">
+              <!-- Filter by Recommendation -->
+              <div class="filter-group">
+                <label for="filterRecommendation">Recommendation:</label>
+                <select id="filterRecommendation" class="select-input">
+                  <option value="ALL">All Verdicts</option>
+                  <option value="Strongly Recommend">⭐ Strongly Recommend</option>
+                  <option value="Recommend for Interview">✅ Recommend for Interview</option>
+                  <option value="Consider with Reservations">⚠️ Consider with Reservations</option>
+                  <option value="Not Recommended">❌ Not Recommended</option>
+                </select>
+              </div>
+
+              <!-- Filter by Stage -->
+              <div class="filter-group">
+                <label for="filterStatus">Stage:</label>
+                <select id="filterStatus" class="select-input">
+                  <option value="ALL">All Stages</option>
+                  <option value="Shortlisted">Shortlisted</option>
+                  <option value="Interview Scheduled">Interview Scheduled</option>
+                  <option value="Under Review">Under Review</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+
+              <!-- Search -->
+              <div class="search-wrap">
+                <input id="searchCandidates" type="text" placeholder="Search candidate, role, skill..." class="search-input" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Candidates Table / Cards -->
+          <div class="candidate-table-wrap">
+            <table class="candidate-table" id="candidateTable">
+              <thead>
+                <tr>
+                  <th>Candidate</th>
+                  <th>Target Role</th>
+                  <th>Fit Score</th>
+                  <th>Recruiter Recommendation</th>
+                  <th>Matched Highlights</th>
+                  <th>Stage</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="candidateTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="emptyTableNotice" class="empty-notice hidden">
+            <p>No candidates match the selected filters.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CANDIDATE DETAIL MODAL -->
+      <div id="detailModal" class="modal-overlay hidden">
+        <div class="modal-card">
+          <div class="modal-header">
+            <div>
+              <span class="eyebrow" id="modalRole">Senior Developer</span>
+              <h2 id="modalCandidateName">Candidate Evaluation</h2>
+            </div>
+            <button id="closeModalBtn" class="close-modal-btn">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Recommendation banner -->
+            <div class="modal-verdict-banner" id="modalVerdictBanner">
+              <div class="verdict-banner-left">
+                <span class="verdict-tag" id="modalRecommendationBadge">Strongly Recommend</span>
+                <span class="modal-score" id="modalScore">92%</span>
+              </div>
+              <p class="modal-verdict-text" id="modalRecommendationDetails"></p>
+            </div>
+
+            <!-- Profile Info Grid -->
+            <div class="modal-grid">
+              <div class="modal-card-sub">
+                <h4>Candidate Summary</h4>
+                <p id="modalSummary" class="modal-text"></p>
+              </div>
+              <div class="modal-card-sub">
+                <h4>Profile Meta</h4>
+                <ul class="meta-list">
+                  <li><strong>File:</strong> <span id="modalFileName">resume.pdf</span></li>
+                  <li><strong>Experience:</strong> <span id="modalExp">4+ years</span></li>
+                  <li><strong>Education:</strong> <span id="modalEdu">B.S. Computer Science</span></li>
+                  <li><strong>Screened via:</strong> <span id="modalModel">Nemotron AI</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="modal-skills-grid">
+              <div class="skill-box">
+                <h4>Matched Skills (<span id="modalMatchedCount">0</span>)</h4>
+                <div id="modalMatchedSkills" class="chip-list"></div>
+              </div>
+              <div class="skill-box">
+                <h4>Missing / Development Needs (<span id="modalMissingCount">0</span>)</h4>
+                <div id="modalMissingSkills" class="chip-list"></div>
+              </div>
+            </div>
+
+            <!-- Recruiter Pipeline Management -->
+            <div class="recruiter-action-card">
+              <h4>Recruiter Stage & Review Notes</h4>
+              <div class="action-inputs-row">
+                <div class="stage-select-wrap">
+                  <label for="modalStageSelect">Update Stage:</label>
+                  <select id="modalStageSelect" class="select-input">
+                    <option value="Under Review">Under Review</option>
+                    <option value="Shortlisted">Shortlisted</option>
+                    <option value="Interview Scheduled">Interview Scheduled</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
+                <div class="notes-wrap">
+                  <label for="modalNotesInput">Recruiter Notes:</label>
+                  <input type="text" id="modalNotesInput" class="text-input" placeholder="Add private hiring notes, feedback, or interview times..." />
+                </div>
+                <button type="button" id="saveStageBtn" class="primary-btn save-stage-btn">Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUTH MODAL (LOGIN & CREATE ACCOUNT) -->
+      <div id="loginModal" class="modal-overlay hidden">
+        <div class="modal-card auth-modal-card">
+          <div class="modal-header">
+            <div>
+              <span class="eyebrow" id="authModalEyebrow">Recruiter Access</span>
+              <h2 id="authModalTitle">Sign In to Recruiter Portal</h2>
+            </div>
+            <button id="closeLoginModalBtn" class="close-modal-btn">&times;</button>
+          </div>
+
+          <!-- Auth Switcher Tabs -->
+          <div class="auth-tabs">
+            <button type="button" id="tabSignIn" class="auth-tab-btn active">Sign In</button>
+            <button type="button" id="tabCreateAccount" class="auth-tab-btn">Create Account</button>
+          </div>
+
+          <!-- SIGN IN FORM -->
+          <form id="loginForm" class="login-form">
+            <div class="login-intro">
+              <p>Sign in with your recruiter credentials to review hiring assessments, manage stages, and add private notes.</p>
+              <div class="demo-creds-box">
+                <div class="demo-creds-title">⚡ Quick Demo Credentials</div>
+                <div><strong>Email:</strong> recruiter@company.com</div>
+                <div><strong>Password:</strong> admin123</div>
+                <button type="button" id="fillDemoCredsBtn" class="demo-autofill-btn">Autofill Demo Credentials</button>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="loginUsername">Email or Username</label>
+              <input type="text" id="loginUsername" name="username" placeholder="recruiter@company.com" required autocomplete="username" />
+            </div>
+
+            <div class="field-group">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" name="password" placeholder="••••••••" required autocomplete="current-password" />
+            </div>
+
+            <div id="loginErrorMsg" class="error-msg hidden"></div>
+
+            <button type="submit" id="loginSubmitBtn" class="primary-btn">
+              <span>Sign In to Dashboard</span>
+            </button>
+            <p class="auth-switch-prompt">Don't have an account? <button type="button" id="switchToRegisterLink" class="inline-link-btn">Create one now</button></p>
+          </form>
+
+          <!-- REGISTER / CREATE ACCOUNT FORM -->
+          <form id="registerForm" class="login-form hidden">
+            <div class="login-intro">
+              <p>Create a verified recruiter profile. Your credentials are securely hashed and stored in MongoDB for future logins.</p>
+            </div>
+
+            <div class="field-group">
+              <label for="regName">Full Name</label>
+              <input type="text" id="regName" name="name" placeholder="e.g. Jessica Miller" required autocomplete="name" />
+            </div>
+
+            <div class="field-group">
+              <label for="regUsername">Work Email or Username <span class="required">*</span></label>
+              <input type="text" id="regUsername" name="username" placeholder="jessica.m@company.com" required autocomplete="username" />
+            </div>
+
+            <div class="field-group">
+              <label for="regRole">Role / Title</label>
+              <input type="text" id="regRole" name="role" placeholder="e.g. Senior Tech Recruiter" />
+            </div>
+
+            <div class="field-group">
+              <label for="regPassword">Password <span class="required">*</span></label>
+              <input type="password" id="regPassword" name="password" placeholder="Minimum 4 characters" minlength="4" required autocomplete="new-password" />
+            </div>
+
+            <div id="registerErrorMsg" class="error-msg hidden"></div>
+            <div id="registerSuccessMsg" class="success-msg hidden"></div>
+
+            <button type="submit" id="registerSubmitBtn" class="primary-btn">
+              <span>Create Recruiter Account</span>
+            </button>
+            <p class="auth-switch-prompt">Already have an account? <button type="button" id="switchToLoginLink" class="inline-link-btn">Sign in here</button></p>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
